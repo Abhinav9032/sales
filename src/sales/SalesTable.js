@@ -54,83 +54,14 @@ const SalesTable = (props) => {
   const [selectedRowByCheckbox, setSelectedRowByCheckBox] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [salesTableData, setSalesTableData] = useState([]);
+  const [isDisableDeleteButton,setDisableDeleteButton]=useState(false)
   const onSubmit = (data) => console.log(data);
-  // const [tableData, setTableData] = useState([
-  //   {
-  //     slNo: 1,
-  //     dateTime: "1/2/2022",
-  //     orderId: "23rt56",
-  //     employeeName: "Sagar samanta",
-  //     employeeCode: "6756",
-  //     customerName: "Nilu jana",
-  //     customerCode: "8978",
-  //     category: "any",
-  //     totalValue: 897,
-  //   },
-  //   {
-  //     slNo: 2,
-  //     dateTime: "1/2/2022",
-  //     orderId: "23rt56",
-  //     employeeName: "Sagar samanta",
-  //     employeeCode: "6756",
-  //     customerName: "Mohit jana",
-  //     customerCode: "567",
-  //     category: "any",
-  //     totalValue: 897,
-  //   },
-  //   {
-  //     slNo: 3,
-  //     dateTime: "1/2/2022",
-  //     orderId: "23rt56",
-  //     employeeName: "Sagar samanta",
-  //     employeeCode: "6756",
-  //     customerName: "Rajesh jana",
-  //     customerCode: "9567",
-  //     category: "any",
-  //     totalValue: 897,
-  //   },
-  //   {
-  //     slNo: 4,
-  //     dateTime: "1/2/2022",
-  //     orderId: "23rt56",
-  //     employeeName: "Sagar samanta",
-  //     employeeCode: "6756",
-  //     customerName: "Silu jana",
-  //     customerCode: "4534",
-  //     category: "any",
-  //     totalValue: 897,
-  //   },
-  //   {
-  //     slNo: 5,
-  //     dateTime: "1/2/2022",
-  //     orderId: "23rt56",
-  //     employeeName: "Sagar samanta",
-  //     employeeCode: "6756",
-  //     customerName: "Golu jana",
-  //     customerCode: "986",
-  //     category: "any",
-  //     totalValue: 897,
-  //   },
-  //   {
-  //     slNo: 6,
-  //     dateTime: "1/2/2022",
-  //     orderId: "23rt56",
-  //     employeeName: "Sagar samanta",
-  //     employeeCode: "6756",
-  //     customerName: "Halu jana",
-  //     customerCode: "123",
-  //     category: "any",
-  //     totalValue: 897,
-  //   },
-  // ]);
+ 
   const [isViewSalesVisible, setViewSalesVisible] = useState(false);
   const [suceessMessage, setSucessMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [selectedSaleIdForView, setSelectedSaleIdForView] = useState();
-  // useEffect(() => {
-  //   setSalesTableData(salesTableRecords);
-  //   console.log("call");
-  // }, []);
+  
   const colums = [
     { title: "SL.No", field: "slNo" },
     { title: "DATE/TIME", field: "createdOn" },
@@ -209,6 +140,7 @@ const SalesTable = (props) => {
     setOpen(true);
   };
   const handleDeleteConfirm = () => {
+    setDisableDeleteButton(true)
     const salesId = selectedRowByCheckbox.map((i) => i.salesId);
     axios({
       method: "post",
@@ -217,18 +149,15 @@ const SalesTable = (props) => {
         salesIdList: salesId,
       },
     })
-      .then((response) => {
-        console.log(response);
-
+      .then((response) => {        
+        setDisableDeleteButton(false)
         const updateSalesTable = salesTableRecords.filter(
           (obj1) =>
             !selectedRowByCheckbox.some((obj2) => obj1.salesId === obj2.salesId)
         );
         setSalesTableRecord(updateSalesTable);
-        setSucessMessage(true);
-        setTimeout(() => {
-          setSucessMessage(false);
-        }, 1000);
+        setShowDeleteButton(false)
+       alert('Sucessful!')
       })
       .catch((err) => {
         setErrorMessage(true);
@@ -505,6 +434,7 @@ const SalesTable = (props) => {
                   type="submit"
                   style={{ width: "200px" }}
                   onClick={handleDeleteRowShowModal}
+                  disable={isDisableDeleteButton}
                 >
                   Delete
                 </Button>

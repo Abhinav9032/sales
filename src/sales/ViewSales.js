@@ -97,6 +97,9 @@ const ViewSales = (props) => {
   const [tableData, setTableData] = useState([]);
   const [selectedSalesAllDetails, setSelectedSalesallDetails] = useState([]);
   const [openEditSaleItemModal, setOpenEditSaleItemModal] = useState(false);
+  const [disableDelateButton,setDisableDeleteButton]=useState(false)
+  
+  console.log(salesId)
   useEffect(() => {
     axios({
       method: "get",
@@ -183,6 +186,7 @@ const ViewSales = (props) => {
   };
   const handleDeleteConfirm = () => {
     console.log(selectedRowByCheckbox);
+    setDisableDeleteButton(true)
     const objId = selectedRowByCheckbox.map((i) => i.objId);
     console.log(objId);
     axios({
@@ -199,14 +203,12 @@ const ViewSales = (props) => {
             !selectedRowByCheckbox.some((obj2) => obj1.objId === obj2.objId)
         );
         setTableData(updateSalesTable);
-        setSucessMessage(true);
-        setTimeout(() => {
-          setSucessMessage(false);
-        }, 1000);
+        alert('Sucessful!')        
       })
       .catch((err) => {})
       .finally(() => {
         setOpenDeleteModal(false);
+        setDisableDeleteButton(false)
       });
   };
 
@@ -430,6 +432,7 @@ const ViewSales = (props) => {
             type="submit"
             style={{ width: "200px" }}
             onClick={handleDeleteRowShowModal}
+            disable={disableDelateButton}
           >
             Delete
           </Button>
@@ -497,30 +500,13 @@ const ViewSales = (props) => {
   );
   
   return (
-    <div style={{ marginLeft: "10rem" }}>
-      {suceessMessage && (
-        <Alert
-          style={{ marginTop: "1rem", width: "15rem", marginRight: "0.5rem" }}
-          severity="success"
-        >
-          Sucessfull..!
-        </Alert>
-      )}
-      {errorMessage && (
-        <Alert
-          style={{ marginTop: "1rem", width: "15rem", marginRight: "0.5rem" }}
-          severity="error"
-        >
-          Failed..!
-        </Alert>
-      )}
+    <div style={{ marginLeft: "10rem" }}>      
       <Modal
         open={open}
         onClose={handleClose}
         className={classes.paper}
         aria-labelledby="simple-modal-title"
-        aria-describedby="simple-modal-description"
-        // style={{ width: "700px", height: "500px" }}
+        aria-describedby="simple-modal-description"        
       >
         {value}
       </Modal>
