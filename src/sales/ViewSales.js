@@ -38,6 +38,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import { useForm, Controller } from "react-hook-form";
 import { SERVICE_URL } from "../UrlTogglerUtil";
+import EditSalesItem from './EditSalesItem'
 import moment from "moment";
 const useStyles = makeStyles((theme) => ({
   inputField: {
@@ -60,6 +61,24 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
   },
+  paperEdit:{
+    position: "absolute",
+    top: "20%",
+    left: "10%",
+    right: "10%",
+    bottom: "10%",
+    height: "30%",
+    marginTop:'7rem',
+    marginLeft:'20rem',
+    marginRight:'20rem',
+    // overflow: "scroll",
+    // display: "block",
+    backgroundColor: theme.palette.background.paper,
+    // backgroundColor:'white',
+    border: "1px solid black",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
 }));
 const ViewSales = (props) => {
   const classes = useStyles();
@@ -77,7 +96,7 @@ const ViewSales = (props) => {
   const [errorMessage, setErrorMessage] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [selectedSalesAllDetails, setSelectedSalesallDetails] = useState([]);
-  const [openEditSaleItemModal,setOpenEditSaleItemModal]=useState(false)
+  const [openEditSaleItemModal, setOpenEditSaleItemModal] = useState(false);
   useEffect(() => {
     axios({
       method: "get",
@@ -128,9 +147,7 @@ const ViewSales = (props) => {
     },
     { title: "SUB-ITEM", field: "subItem" },
     { title: "QUNTITY", field: "quantity" },
-    { title: "UNIT", field: "unit" },
-    { title: "BATCH NO", field: "objId" },
-    { title: "EXP.DATE", field: "" },
+    { title: "UNIT", field: "unit" },    
     { title: "PRICE PER UNIT", field: "pricePerUnit" },
     {
       title: "TOTAL VALUE",
@@ -153,6 +170,7 @@ const ViewSales = (props) => {
   const handleCheckBoxSelection = (data) => {
     if (data.length > 0) {
       setSelectedRowByCheckBox(data);
+      console.log(data)
       setShowDeleteBtn(true);
     } else {
       setShowDeleteBtn(false);
@@ -191,13 +209,13 @@ const ViewSales = (props) => {
         setOpenDeleteModal(false);
       });
   };
- 
-  const handleSalesEdit=()=>{
-    setOpenEditSaleItemModal(true)
-  }
-  const handleEditSaleModalClose=()=>{
-    setOpenEditSaleItemModal(false)
-  }
+
+  const handleSalesEdit = () => {
+    setOpenEditSaleItemModal(true);
+  };
+  const handleEditSaleModalClose = () => {
+    setOpenEditSaleItemModal(false);
+  };
   const value = (
     <div className={classes.paper}>
       <div
@@ -221,97 +239,56 @@ const ViewSales = (props) => {
         </div>
         <Button onClick={handleClose} endIcon={<CloseTwoToneIcon />}></Button>
       </div>
-      <Paper style={{ padding: "0.5rem", marginBottom: "1rem" }}>
-        <Grid container spacing={2}>
-          <Grid item xs={2}>
-            <label>Employee Name</label>
-            <input
-              variant="outlined"
-              value={selectedSalesAllDetails.employeeName}
-              readOnly
-              fullWidth
-              className={classes.inputField}
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <label>Employee Code</label>
-            <input
-              variant="outlined"
-              value={selectedSalesAllDetails.employeeCode}
-              fullWidth
-              className={classes.inputField}
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <label>Customer Name</label>
-            <input
-              value={selectedSalesAllDetails.customerName}
-              variant="outlined"
-              fullWidth
-              className={classes.inputField}
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <label>Customer Code</label>
-            <input
-              value={selectedSalesAllDetails.customerCode}
-              variant="outlined"
-              fullWidth
-              className={classes.inputField}
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <label>Order Id</label>
-            <input
-              value={selectedSalesAllDetails.salesId}
-              variant="outlined"
-              fullWidth
-              className={classes.inputField}
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <label>Date</label>
-            <input
-              value={selectedSalesAllDetails.createdOn}
-              variant="outlined"
-              fullWidth
-              className={classes.inputField}
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <label>State</label>
-            <input
-              value={selectedSalesAllDetails.state}
-              variant="outlined"
-              fullWidth
-              className={classes.inputField}
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <label>Warehouse</label>
-            <input
-              value={selectedSalesAllDetails.warehouse}
-              readOnly
-              variant="outlined"
-              fullWidth
-              className={classes.inputField}
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <label>Pin</label>
-            <input
-              value={selectedSalesAllDetails.pin}
-              fullWidth
-              className={classes.inputField}
-            />
-          </Grid>
-        </Grid>
-      </Paper>
-      <Paper style={{ padding: "0.5rem" }}>
+      <div style={{ padding: "0.5rem", marginBottom: "1rem" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <tr>
+            <th style={{ border: "1px solid #dddddd" }}>EMPLOYEE NAME</th>
+            <th style={{ border: "1px solid #dddddd" }}>EMPLOYEE CODE</th>
+            <th style={{ border: "1px solid #dddddd" }}>CUSTOMER NAME</th>
+            <th style={{ border: "1px solid #dddddd" }}>CUSTOMER CODE</th>
+            <th style={{ border: "1px solid #dddddd" }}>ORDER ID</th>
+            <th style={{ border: "1px solid #dddddd" }}>DATE</th>
+            <th style={{ border: "1px solid #dddddd" }}>STATE</th>
+            <th style={{ border: "1px solid #dddddd" }}>WAREHOUSE</th>
+            <th style={{ border: "1px solid #dddddd" }}>PIN</th>
+          </tr>
+          <tr>
+            <td style={{ border: "1px solid #dddddd" }}>
+              {selectedSalesAllDetails.employeeName}
+            </td>
+            <td style={{ border: "1px solid #dddddd" }}>
+              {selectedSalesAllDetails.employeeCode}
+            </td>
+            <td style={{ border: "1px solid #dddddd" }}>
+              {selectedSalesAllDetails.customerName}
+            </td>
+            <td style={{ border: "1px solid #dddddd" }}>
+              {selectedSalesAllDetails.customerCode}
+            </td>
+            <td style={{ border: "1px solid #dddddd" }}>
+              {selectedSalesAllDetails.salesId}
+            </td>
+            <td style={{ border: "1px solid #dddddd" }}>
+              {selectedSalesAllDetails.createdOn}
+            </td>
+            <td style={{ border: "1px solid #dddddd" }}>
+              {selectedSalesAllDetails.state}
+            </td>
+            <td style={{ border: "1px solid #dddddd" }}>
+              {selectedSalesAllDetails.warehouse}
+            </td>
+            <td style={{ border: "1px solid #dddddd" }}>
+              {selectedSalesAllDetails.pin}
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div style={{ padding: "0.5rem" }}>
         <form>
           <Grid container spacing={2}>
             <Grid item xs={2}>
               <Autocomplete
+                size="small"
                 id="combo-box-demo"
                 options={stateOptions}
                 getOptionLabel={(option) => option.title}
@@ -333,6 +310,7 @@ const ViewSales = (props) => {
             </Grid>
             <Grid item xs={2}>
               <Autocomplete
+                size="small"
                 id="combo-box-demo"
                 options={stateOptions}
                 getOptionLabel={(option) => option.title}
@@ -354,6 +332,7 @@ const ViewSales = (props) => {
             </Grid>
             <Grid item xs={2}>
               <Autocomplete
+                size="small"
                 id="combo-box-demo"
                 options={stateOptions}
                 getOptionLabel={(option) => option.title}
@@ -441,7 +420,7 @@ const ViewSales = (props) => {
           </MuiPickersUtilsProvider> */}
           </Grid>
         </form>
-      </Paper>
+      </div>
 
       <div style={{ padding: "1rem", marginTop: "0rem", marginBottom: "1rem" }}>
         {showDeleteButton && (
@@ -483,8 +462,8 @@ const ViewSales = (props) => {
             actionsColumnIndex: -1,
             selection: true,
             rowStyle: (data, index) =>
-              index % 2 === 0 ? { background: "#f5f5f5" } : null,
-            headerStyle: { background: "#c8bbbbd6 " },
+              index % 2 !== 0 ? { background: "#f5f5f5" } : null,
+            headerStyle: { background: "rgba(242, 238, 238, 0.9)" },
           }}
           onSelectionChange={handleCheckBoxSelection}
         />
@@ -516,9 +495,7 @@ const ViewSales = (props) => {
       </div>
     </div>
   );
-  const editForm=(
-      <div>sagar</div>
-  )
+  
   return (
     <div style={{ marginLeft: "10rem" }}>
       {suceessMessage && (
@@ -547,7 +524,9 @@ const ViewSales = (props) => {
       >
         {value}
       </Modal>
-      <Modal open={openEditSaleItemModal} onClose={handleEditSaleModalClose}>{editForm}</Modal>
+      <Modal  className={classes.paperEdit} open={openEditSaleItemModal} onClose={handleEditSaleModalClose}>
+        <EditSalesItem selectedRowByCheckbox={selectedRowByCheckbox} handleEditSaleModalClose={handleEditSaleModalClose}/>
+      </Modal>
     </div>
   );
 };

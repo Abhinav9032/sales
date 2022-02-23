@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Button, Paper } from "@material-ui/core";
+import { TextField, Button, Paper, InputLabel } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
@@ -79,6 +79,7 @@ const Sales = () => {
   const [errorMessage, setErrorMessage] = useState(false);
   const [salesTableRecords, setSalesTableRecord] = useState([]);
   const [totalSalesCalCulatedvalue, setTotalSalesCalCulatedValue] = useState(0);
+  const [uploadImageUrl, setUploadImageUrl] = useState("");
 
   const formik = useFormik({
     initialValues: {
@@ -128,15 +129,6 @@ const Sales = () => {
       },
     }).then((response) => {
       console.log(response);
-      setGetGeneratedOrderId(response.data.salesId);
-      setTotalSalesCalCulatedValue(
-        (prevData) => response.data.totalValue + prevData
-      );
-     
-      setSucessMessage(true);
-      setTimeout(() => {
-        setSucessMessage(false);
-      }, 1000);
       formik.setFieldValue("quantity", 0);
       formik.setFieldValue("category", "");
       formik.setFieldValue("item", "");
@@ -144,8 +136,41 @@ const Sales = () => {
       formik.setFieldValue("unit", "");
       formik.setFieldValue("price", 0);
       formik.setFieldValue("totalPrice", 0);
+      setGetGeneratedOrderId(response.data.salesId);
+      console.log(response.data.salesTd);
+      setTotalSalesCalCulatedValue(
+        (prevData) => response.data.totalValue + prevData
+      );
+      alert('Sucessfil!')
+      setSucessMessage(true);
+      setTimeout(() => {
+        setSucessMessage(false);
+      }, 1000);
+      
     });
     // formik.values.quantity
+  };
+  const handleDocumentUpload = (e) => {
+    var profileImage = document.getElementById("photo-upload");
+    if (profileImage && profileImage.files && profileImage.files[0]) {
+      var file = profileImage.files[0];
+      let formData = new FormData();
+      formData.append("formData", file);
+      formData.append("salesId", generatedOrderId);
+      console.log(formData, file);
+      axios({
+        method: "POST",
+        url: SERVICE_URL + "/sales/dashboard/salesDocumentUpload",
+        // headers: AuthService.authHeader(),
+        data: formData,
+      })
+        .then((response) => {
+          setUploadImageUrl(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   };
 
   useEffect(() => {
@@ -163,7 +188,7 @@ const Sales = () => {
       setStates(response.data.states);
       setPins(response.data.pincodes);
       setWarehouses(response.data.warehouses);
-      setSalesTableRecord(response.data.salesTableRecords)
+      setSalesTableRecord(response.data.salesTableRecords);
       setEmployeeNames(
         response.data.employees.map(
           (employee) =>
@@ -300,7 +325,7 @@ const Sales = () => {
         employeeName: employeeName,
         pin: formik.values.pin,
         poRefDate: moment().format("YYYY-MM-DD"),
-        poRefDoc: "",
+        poRefDoc: uploadImageUrl,
         poRefNum: formik.values.poRefNo,
         saleType: selectedSaleCategory,
         salesId: generatedOrderId,
@@ -311,13 +336,15 @@ const Sales = () => {
     })
       .then((response) => {
         console.log(response);
-        // setSalesTableRecord((prevData)=>[...response.data,prevData])
+        setSalesTableRecord((prevData) => [response.data, ...prevData]);
+        setTotalSalesCalCulatedValue(0);
+        setGetGeneratedOrderId("");
+        alert('Sucessfil!')
       })
       .catch((err) => {
         console.log(err);
       });
   };
-
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <div
@@ -368,8 +395,9 @@ const Sales = () => {
           <form onSubmit={formik.handleSubmit}>
             <Paper elevation={3} style={{ padding: "1rem" }}>
               <Grid container spacing={2}>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Autocomplete
+                    size="small"
                     options={states}
                     style={{ width: "100%" }}
                     value={formik.values.state}
@@ -392,8 +420,9 @@ const Sales = () => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Autocomplete
+                   size="small"
                     options={warehouses}
                     style={{ width: "100%" }}
                     value={formik.values.warehouse}
@@ -419,8 +448,9 @@ const Sales = () => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Autocomplete
+                   size="small"
                     options={pins}
                     style={{ width: "100%" }}
                     value={formik.values.pin}
@@ -442,8 +472,9 @@ const Sales = () => {
                   />
                 </Grid>
                 {/* Category */}
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Autocomplete
+                   size="small"
                     options={categoryOptions}
                     style={{ width: "100%" }}
                     value={formik.values.category}
@@ -467,8 +498,9 @@ const Sales = () => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Autocomplete
+                   size="small"
                     options={itemOptions}
                     style={{ width: "100%" }}
                     value={formik.values.item}
@@ -489,8 +521,9 @@ const Sales = () => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Autocomplete
+                   size="small"
                     options={subItemOptions}
                     style={{ width: "100%" }}
                     value={formik.values.subItem}
@@ -514,10 +547,10 @@ const Sales = () => {
                     )}
                   />
                 </Grid>
-              </Grid>
-              <Grid container spacing={2}>
-                <Grid item xs={4}>
+             
+                <Grid item xs={3}>
                   <Autocomplete
+                   size="small"
                     options={employeeNames}
                     style={{ width: "100%" }}
                     value={formik.values.employeeName}
@@ -544,8 +577,9 @@ const Sales = () => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Autocomplete
+                   size="small"
                     options={customers}
                     style={{ width: "100%" }}
                     value={formik.values.customerName}
@@ -577,6 +611,7 @@ const Sales = () => {
                 {/* 5) Date Picker */}
                 <Grid item xs={3}>
                   <KeyboardDatePicker
+                   size="small"
                     disableToolbar
                     variant="inline"
                     format="MM/dd/yyyy"
@@ -600,6 +635,7 @@ const Sales = () => {
                 {/* 4) Time Picker */}
                 <Grid item xs={3}>
                   <KeyboardTimePicker
+                   size="small"
                     margin="normal"
                     label="Delivery Time"
                     name="deliveryTime"
@@ -621,6 +657,7 @@ const Sales = () => {
                 <Grid item xs={3}>
                   <TextField
                     placeholder="Enter P.O/Ref No"
+                    size="small"
                     label="P.O/Ref No"
                     variant="outlined"
                     fullWidth
@@ -636,6 +673,7 @@ const Sales = () => {
                 </Grid>
                 <Grid item xs={3}>
                   <KeyboardDatePicker
+                   size="small"
                     disableToolbar
                     variant="inline"
                     format="MM/dd/yyyy"
@@ -656,6 +694,7 @@ const Sales = () => {
               <Grid container spacing={2}>
                 <Grid item xs={3}>
                   <TextField
+                   size="small"
                     placeholder="No category selected"
                     label="Category"
                     name="category-preview"
@@ -668,6 +707,7 @@ const Sales = () => {
                 </Grid>
                 <Grid item xs={3}>
                   <TextField
+                   size="small"
                     placeholder="No item selected"
                     label="Item"
                     name="item-preview"
@@ -680,6 +720,7 @@ const Sales = () => {
                 </Grid>
                 <Grid item xs={3}>
                   <TextField
+                   size="small"
                     placeholder="No sub-item selected"
                     label="Sub-Item"
                     name="subItem-preview"
@@ -692,6 +733,7 @@ const Sales = () => {
                 </Grid>
                 <Grid item xs={3}>
                   <TextField
+                   size="small"
                     placeholder="Enter Quantity Here"
                     label="Quantity"
                     variant="outlined"
@@ -711,6 +753,7 @@ const Sales = () => {
                 </Grid>
                 <Grid item xs={3}>
                   <Autocomplete
+                   size="small"
                     options={unitOptions}
                     style={{ width: "100%" }}
                     value={formik.values.unit}
@@ -733,6 +776,7 @@ const Sales = () => {
                 </Grid>
                 <Grid item xs={3}>
                   <TextField
+                   size="small"
                     placeholder="Enter Price Here"
                     label="Price"
                     variant="outlined"
@@ -748,6 +792,7 @@ const Sales = () => {
                 </Grid>
                 <Grid item xs={3}>
                   <TextField
+                   size="small"
                     placeholder="Total price"
                     label="Total Price"
                     variant="outlined"
@@ -763,26 +808,17 @@ const Sales = () => {
                     disabled
                   />
                 </Grid>
-                <Grid item xs={3}>
-                  {/* <input
-                    accept="image/*"
-                    className={classes.input}
-                    id="contained-button-file"
-                    multiple
-                    type="file"
-                    // display="none",
-                  />
-                  <label htmlFor="contained-button-file">
-                    <Button
-                      variant="contained"
-                      style={{ width: "100%" }}
-                      color="primary"
-                      component="span"
-                    >
-                      Upload
-                    </Button>
-                  </label> */}
-                </Grid>
+                {generatedOrderId && (
+                  <Grid item xs={3}>
+                    <InputLabel  size="small">Upload Document</InputLabel>
+                    <input
+                      id="photo-upload"
+                      type="file"
+                      name="emp-photo-upload"
+                      onChange={(e) => handleDocumentUpload(e)}
+                    />                   
+                  </Grid>
+                )}
               </Grid>
 
               {suceessMessage && (
@@ -851,19 +887,19 @@ const Sales = () => {
           </form>
         </div>
       </div>
-       {salesTableRecords.length >0 && (
+      {salesTableRecords.length > 0 && (
         <SalesTable
           state={states}
           pin={pins}
           warehouse={warehouses}
-          salesTableRecords={salesTableRecords} 
-          setSalesTableRecord={setSalesTableRecord}        
+          salesTableRecords={salesTableRecords}
+          setSalesTableRecord={setSalesTableRecord}
         />
       )}
 
       {isViewSalesVisible && (
-        <ViewSales setViewSalesVisible={setViewSalesVisible} />
-      )} 
+        <ViewSales salesId={generatedOrderId} setViewSalesVisible={setViewSalesVisible} />
+      )}
     </MuiPickersUtilsProvider>
   );
 };

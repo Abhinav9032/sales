@@ -254,6 +254,7 @@ const SalesTable = (props) => {
                 <Grid item xs={3}>
                   <Autocomplete
                     id="combo-box-demo"
+                    size="small"
                     options={state}
                     getOptionLabel={state}
                     style={{ width: "100%" }}
@@ -274,6 +275,7 @@ const SalesTable = (props) => {
                 </Grid>
                 <Grid item xs={3}>
                   <Autocomplete
+                  size="small"
                     id="combo-box-demo"
                     options={warehouse}
                     getOptionLabel={(option) => option.title}
@@ -295,6 +297,7 @@ const SalesTable = (props) => {
                 </Grid>
                 <Grid item xs={3}>
                   <Autocomplete
+                  size="small"
                     id="combo-box-demo"
                     options={pin}
                     getOptionLabel={(option) => option.title}
@@ -318,6 +321,7 @@ const SalesTable = (props) => {
                 <Grid item xs={3}>
                   <Autocomplete
                     id="combo-box-demo"
+                    size="small"
                     options={stateOptions}
                     getOptionLabel={(option) => option.title}
                     style={{ width: "100%" }}
@@ -339,6 +343,7 @@ const SalesTable = (props) => {
                 <Grid item xs={3}>
                   <Autocomplete
                     id="combo-box-demo"
+                    size="small"
                     options={stateOptions}
                     getOptionLabel={(option) => option.title}
                     style={{ width: "100%" }}
@@ -360,6 +365,7 @@ const SalesTable = (props) => {
                 <Grid item xs={3}>
                   <Autocomplete
                     id="combo-box-demo"
+                    size="small"
                     options={stateOptions}
                     getOptionLabel={(option) => option.title}
                     style={{ width: "100%" }}
@@ -384,6 +390,7 @@ const SalesTable = (props) => {
                     <Controller
                       render={(props) => (
                         <KeyboardDatePicker
+                        size="small"
                           disableToolbar
                           variant="inline"
                           format="MM/dd/yyyy"
@@ -410,6 +417,7 @@ const SalesTable = (props) => {
                     <Controller
                       render={(props) => (
                         <KeyboardDatePicker
+                        size="small"
                           disableToolbar
                           variant="inline"
                           format="MM/dd/yyyy"
@@ -559,4 +567,4 @@ const SalesTable = (props) => {
   );
 };
 
-export default SalesTable;
+export default React.memo(SalesTable);
